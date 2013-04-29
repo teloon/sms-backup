@@ -27,8 +27,8 @@ def get_page_num(bsr):
     #print txt.encode("utf8")
     return len(txt.split("/")) - 1
 
-def crawl(usr, pswd, out_path):
-    bsr = Browser()
+def crawl(usr, pswd, out_path, driver="firefox"):
+    bsr = Browser(driver)
     bsr.visit(URL_LOGIN)
     bsr.find_by_id("phone1").fill(usr)
     bsr.find_by_id("pswd").fill(pswd)
@@ -39,12 +39,13 @@ def crawl(usr, pswd, out_path):
         print "Login failed, bye!"
     bsr.visit("http://123.163.com/webmail/main/#mid=7")
     while bsr.is_element_not_present_by_css("div.list-time"):
+        print "sleeping"
         time.sleep(1)
     bsr.find_by_css("span.iblock.icn-msg.list-icon.potr")[0].click()
     page_num = get_page_num(bsr)
     with open(out_path, "w") as out_f:
         for pi in xrange(page_num):
-            print "Page %d/%d", pi+1, page_num
+            print "Page %d/%d" % (pi+1, page_num)
             date_lst = bsr.find_by_css("div.list-time")
             date_msgs_lst = bsr.find_by_css("div.sms-item")
             #HACK for scrolling the sms list down because of AJAX-style of showing sms
